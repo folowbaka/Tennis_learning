@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class PreData {
 
     private  static ArrayList<PreDataVector> csvData;
-
+    private  static ArrayList<Movement> csvMov;
     public static void readCsv(String csvName)
     {
         try (Scanner scanner = new Scanner(new File(csvName)))
@@ -44,12 +44,22 @@ public class PreData {
             {
                 int peak=foundPeakMov(numVector,nbVector,vectorNorms);
                 System.out.println("PEAK "+peak);
+                int beginInterval=0;
+                int endInterval=0;
+
                 if(peak+50>nbVector)
-                    numVector=nbVector-peak;
+                {
+                    numVector = nbVector;
+                }
                 else
                 {
-                    numVector=peak+50;
+
+                    numVector=peak+51;
                 }
+                endInterval=numVector;
+                if(peak-50>0)
+                    beginInterval=peak-50;
+                csvMov.add(new Movement(csvData,beginInterval,endInterval));
 
             }
             else
