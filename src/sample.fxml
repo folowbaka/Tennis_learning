@@ -10,15 +10,15 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DataController">
    <center>
-      <VBox prefHeight="294.0" prefWidth="398.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="300.0" prefWidth="400.0" BorderPane.alignment="CENTER">
          <children>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Label text="Label">
+                  <Label text="Répertoire Csv">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin></Label>
-                  <TextField fx:id="preDataFileTextF">
+                  <TextField fx:id="preDataFileTextF" maxWidth="1.7976931348623157E308" prefHeight="31.0" prefWidth="400.0">
                      <HBox.margin>
                         <Insets left="5.0" right="5.0" />
                      </HBox.margin></TextField>
