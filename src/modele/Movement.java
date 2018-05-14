@@ -17,6 +17,32 @@ public class Movement {
         this.movType=MovType.getMovType(movType);
     }
 
+    public double[] getMoySection(int nbSection)
+    {
+        int nbVector=vectorMov.size();
+        int vectorPerSection=nbVector/nbSection;
+        double moyennes[]=new double[3*nbSection];
+        for(int i=0;i<nbSection;i++)
+        {
+            double moyenneX=0;
+            double moyenneY=0;
+            double moyenneZ=0;
+            for(int j=0;j<vectorPerSection;j++)
+            {
+                moyenneX+=vectorMov.get(j).getX();
+                moyenneY+=vectorMov.get(j).getY();
+                moyenneZ+=vectorMov.get(j).getZ();
+            }
+            moyenneX=moyenneX/vectorPerSection;
+            moyenneY=moyenneY/vectorPerSection;
+            moyenneZ=moyenneZ/vectorPerSection;
+            moyennes[3*i]=moyenneX;
+            moyennes[1+3*i]=moyenneY;
+            moyennes[2+3*i]=moyenneZ;
+        }
+        return moyennes;
+    }
+
     public ArrayList<PreDataVector> getVectorMov() {
         return vectorMov;
     }

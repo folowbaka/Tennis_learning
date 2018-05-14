@@ -9,6 +9,7 @@ public enum MovType {
     RP("RP"),
     SC("SC"),
     SL("SL"),
+    SP("SP"),
     SMA("SMA"),
     VCD("VCD"),
     VR("VR"),
@@ -45,6 +46,8 @@ public enum MovType {
                 return SC;
             case "SL" :
                 return SL;
+            case "SP" :
+                return SP;
             case "SMA" :
                 return SMA;
             case "VCD" :

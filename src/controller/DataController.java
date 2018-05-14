@@ -29,8 +29,7 @@ public class DataController extends TennisController{
             File[] listOfCSV=selectedFile.listFiles();
             for(int i=0;i<listOfCSV.length;i++)
             {
-                String movType="";
-                String tamere=listOfCSV[i].getName();
+                String movType;
                 if(Pattern.matches("^CoupDroit_Coupe*.*",listOfCSV[i].getName()))
                     movType="CDC";
                 else if(Pattern.matches("^CoupDroit_Lifte*.*",listOfCSV[i].getName()))
@@ -51,6 +50,10 @@ public class DataController extends TennisController{
                     movType="SP";
                 else if(Pattern.matches("^Smatch*.*",listOfCSV[i].getName()))
                     movType="SMA";
+                else if(Pattern.matches("^VoletCoupDroit*.*",listOfCSV[i].getName()))
+                    movType="VCD";
+                else if(Pattern.matches("^VoletRevers*.*",listOfCSV[i].getName()))
+                    movType="VR";
                 else
                     movType="NULL";
                 if(!movType.equals("NULL"))
@@ -60,6 +63,7 @@ public class DataController extends TennisController{
                 }
             }
             PreData.writeArff(selectedFile,PreData.ARFFKNN);
+            PreData.writeArff(selectedFile,PreData.TREE);
         }
     }
 }

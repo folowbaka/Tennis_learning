@@ -14,6 +14,7 @@ public class PreData {
     private  static ArrayList<PreDataVector> csvData;
     private  static ArrayList<Movement> csvMov=new ArrayList<>();
     public  static final int  ARFFKNN =1;
+    public  static final int  TREE =2;
     public static void readCsv(String csvName)
     {
         try (Scanner scanner = new Scanner(new File(csvName)))
@@ -100,7 +101,7 @@ public class PreData {
     public static void writeArff(File directory,int classifier)
     {
 
-        File file = new File(directory.getAbsolutePath()+"/"+directory.getName()+".arff");
+        File file = new File(directory.getAbsolutePath()+"/"+directory.getName()+classifier+".arff");
         FileWriter fw = null;
         try {
 
@@ -125,13 +126,13 @@ public class PreData {
 
         atts=new ArrayList<Attribute>();
         attValso = new ArrayList<String>();
+        attVals = new ArrayList<String>();
         switch (classifier)
         {
             case ARFFKNN :
             for (int i = 0; i < nbMov; i++)
                 attValso.add(("" + i));
             atts.add(new Attribute("bag-id", attValso));
-            attVals = new ArrayList<String>();
             attsRel = new ArrayList<Attribute>();
             attsRel.add(new Attribute("x"));
             attsRel.add(new Attribute("y"));
@@ -141,6 +142,7 @@ public class PreData {
             for (MovType movType : MovType.values()) {
                 attVals.add(movType.getMovType());
             }
+            attVals.remove(attVals.size()-1);
             atts.add(new Attribute("class", attVals));
             data = new Instances("Mouvement", atts, 0);
             for (int i = 0; i < nbMov; i++) {
@@ -167,6 +169,28 @@ public class PreData {
 
             }
             break;
+            case TREE :
+                for(int i=0;i<5;i++)
+                {
+                    atts.add(new Attribute("mx"+(i+1)));
+                    atts.add(new Attribute("my"+(i+1)));
+                    atts.add(new Attribute("mz"+(i+1)));
+                }
+                for (MovType movType : MovType.values()) {
+                    attVals.add(movType.getMovType());
+                }
+                attVals.remove(attVals.size()-1);
+                atts.add(new Attribute("class", attVals));
+                data = new Instances("Mouvement", atts, 0);
+                for(int i=0;i<nbMov;i++)
+                {
+                    vals = new double[data.numAttributes()];
+                    double moyenne[]=csvMov.get(i).getMoySection(5);
+                    System.arraycopy(moyenne,0,vals,0,moyenne.length);
+                    vals[moyenne.length]=attVals.indexOf(csvMov.get(i).getMovType().getMovType());
+                    data.add(new DenseInstance(1.0, vals));
+                }
+                break;
             default:
         }
         pw.print(data);
