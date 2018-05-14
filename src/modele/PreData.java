@@ -176,6 +176,14 @@ public class PreData {
                     atts.add(new Attribute("my"+(i+1)));
                     atts.add(new Attribute("mz"+(i+1)));
                 }
+                attValso.add("pos");
+                attValso.add("neg");
+                for(int i=0;i<5;i++)
+                {
+                    atts.add(new Attribute("coeffx"+(i+1),attValso));
+                    atts.add(new Attribute("coeffy"+(i+1),attValso));
+                    atts.add(new Attribute("coeffz"+(i+1),attValso));
+                }
                 for (MovType movType : MovType.values()) {
                     attVals.add(movType.getMovType());
                 }
@@ -186,8 +194,15 @@ public class PreData {
                 {
                     vals = new double[data.numAttributes()];
                     double moyenne[]=csvMov.get(i).getMoySection(5);
+                    String coeffs[]=csvMov.get(i).getCoefSection(5);
                     System.arraycopy(moyenne,0,vals,0,moyenne.length);
-                    vals[moyenne.length]=attVals.indexOf(csvMov.get(i).getMovType().getMovType());
+                    int k=0;
+                    for(int j=moyenne.length;j<vals.length-1;j++)
+                    {
+                        vals[j]=attValso.indexOf(coeffs[k]);
+                        k++;
+                    }
+                    vals[vals.length-1]=attVals.indexOf(csvMov.get(i).getMovType().getMovType());
                     data.add(new DenseInstance(1.0, vals));
                 }
                 break;
