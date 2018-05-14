@@ -59,7 +59,7 @@ public class DataController extends TennisController{
                     PreData.detectMov(movType);
                 }
             }
-            PreData.writeArff(selectedFile);
+            PreData.writeArff(selectedFile,PreData.ARFFKNN);
         }
     }
 }

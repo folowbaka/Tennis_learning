@@ -13,6 +13,7 @@ public class PreData {
 
     private  static ArrayList<PreDataVector> csvData;
     private  static ArrayList<Movement> csvMov=new ArrayList<>();
+    public  static final int  ARFFKNN =1;
     public static void readCsv(String csvName)
     {
         try (Scanner scanner = new Scanner(new File(csvName)))
@@ -96,7 +97,7 @@ public class PreData {
         return peak;
     }
 
-    public static void writeArff(File directory)
+    public static void writeArff(File directory,int classifier)
     {
 
         File file = new File(directory.getAbsolutePath()+"/"+directory.getName()+".arff");
@@ -114,49 +115,59 @@ public class PreData {
         pw = new PrintWriter(bw);
         int nbMov=csvMov.size();
         ArrayList<String> attVals;
+        ArrayList<String> attValso;
         ArrayList<Attribute> attsRel;
         ArrayList<Attribute> atts;
-        Instances data;
+        Instances data=null;
         Instances dataRel;
         double[]        vals;
         double[]        valsRel;
 
         atts=new ArrayList<Attribute>();
-        attVals = new ArrayList<String>();
-        attsRel=new ArrayList<Attribute>();
-        attsRel.add(new Attribute("x"));
-        attsRel.add(new Attribute("y"));
-        attsRel.add(new Attribute("z"));
-        dataRel = new Instances("vectorXYZ", attsRel, 0);
-        atts.add(new Attribute("att5", dataRel, 0));
-        for (MovType movType : MovType.values()) {
-            attVals.add(movType.getMovType());
-        }
-        atts.add(new Attribute("class", attVals));
-        data = new Instances("Mouvement", atts, 0);
-        for(int i=0;i<nbMov;i++)
+        attValso = new ArrayList<String>();
+        switch (classifier)
         {
-            int nbInterval=csvMov.get(i).getVectorMov().size();
-
-            // 2. create Instances object
-            vals = new double[data.numAttributes()];
-            dataRel = new Instances(data.attribute(0).relation(), 0);
-
-            for(int j=0;j<nbInterval;j++)
-            {
-                valsRel = new double[3];
-                valsRel[0] = csvMov.get(i).getVectorMov().get(j).getX();
-                valsRel[1] = csvMov.get(i).getVectorMov().get(j).getY();
-                valsRel[2] = csvMov.get(i).getVectorMov().get(j).getZ();
-                dataRel.add(new DenseInstance(1.0, valsRel));
+            case ARFFKNN :
+            for (int i = 0; i < nbMov; i++)
+                attValso.add(("" + i));
+            atts.add(new Attribute("bag-id", attValso));
+            attVals = new ArrayList<String>();
+            attsRel = new ArrayList<Attribute>();
+            attsRel.add(new Attribute("x"));
+            attsRel.add(new Attribute("y"));
+            attsRel.add(new Attribute("z"));
+            dataRel = new Instances("vectorXYZ", attsRel, 0);
+            atts.add(new Attribute("bag", dataRel, 0));
+            for (MovType movType : MovType.values()) {
+                attVals.add(movType.getMovType());
             }
-            vals[0] = data.attribute(0).addRelation(dataRel);
-            vals[1]=attVals.indexOf(csvMov.get(i).getMovType().getMovType());
-            // add
-            data.add(new DenseInstance(1.0, vals));
+            atts.add(new Attribute("class", attVals));
+            data = new Instances("Mouvement", atts, 0);
+            for (int i = 0; i < nbMov; i++) {
+                int nbInterval = csvMov.get(i).getVectorMov().size();
 
-            // 4. output data
+                // 2. create Instances object
+                vals = new double[data.numAttributes()];
+                dataRel = new Instances(data.attribute(1).relation(), 0);
 
+                for (int j = 0; j < nbInterval; j++) {
+                    valsRel = new double[3];
+                    valsRel[0] = csvMov.get(i).getVectorMov().get(j).getX();
+                    valsRel[1] = csvMov.get(i).getVectorMov().get(j).getY();
+                    valsRel[2] = csvMov.get(i).getVectorMov().get(j).getZ();
+                    dataRel.add(new DenseInstance(1.0, valsRel));
+                }
+                vals[0] = attValso.indexOf(("" + i));
+                vals[1] = data.attribute(1).addRelation(dataRel);
+                vals[2] = attVals.indexOf(csvMov.get(i).getMovType().getMovType());
+                // add
+                data.add(new DenseInstance(1.0, vals));
+
+                // 4. output data
+
+            }
+            break;
+            default:
         }
         pw.print(data);
         pw.close();

@@ -10,6 +10,8 @@ public enum MovType {
     SC("SC"),
     SL("SL"),
     SMA("SMA"),
+    VCD("VCD"),
+    VR("VR"),
     NULL("NULL");
 
     private String movType;
@@ -45,6 +47,10 @@ public enum MovType {
                 return SL;
             case "SMA" :
                 return SMA;
+            case "VCD" :
+                return  VCD;
+            case "VR":
+                return VR;
             default:
                 return NULL;
         }
