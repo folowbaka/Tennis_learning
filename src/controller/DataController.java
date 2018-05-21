@@ -22,7 +22,7 @@ public class DataController extends TennisController{
 
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Répertoire CSV");
-        File selectedFile=chooser.showDialog(this.getStage());
+        File selectedFile=chooser.showDialog(this.getApplication().getPrimaryStage());
         if(selectedFile!=null)
         {
             preDataFileTextF.setText(selectedFile.getAbsolutePath());
@@ -65,6 +65,7 @@ public class DataController extends TennisController{
             }
             PreData.writeArff(selectedFile,PreData.ARFFKNN);
             PreData.writeArff(selectedFile,PreData.TREE);
+            this.getApplication().getChartController().drawChartMov();
         }
     }
 }

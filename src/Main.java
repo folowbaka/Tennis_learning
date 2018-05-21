@@ -1,24 +1,26 @@
 
+import controller.ChartController;
 import controller.DataController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import vue.IhmApplication;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        DataController dataController;
-
-        FXMLLoader loader=new FXMLLoader(getClass().getResource("sample.fxml"));
-        Parent root =loader.load();
+        IhmApplication application=new IhmApplication(primaryStage);
         primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 600, 400));
+        application.getRoot().setScaleShape(true);
+        primaryStage.setScene(new Scene(application.getRoot(), 1500, 1000));
+        primaryStage.setResizable(true);
         primaryStage.show();
-        dataController=loader.getController();
-        dataController.setStage(primaryStage);
     }
 
 

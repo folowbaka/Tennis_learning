@@ -258,4 +258,7 @@ public class PreData {
         pw.close();
     }
 
+    public static ArrayList<Movement> getCsvMov() {
+        return csvMov;
+    }
 }

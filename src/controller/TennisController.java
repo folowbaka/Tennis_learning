@@ -1,16 +1,16 @@
 package controller;
 
 import javafx.stage.Window;
+import vue.IhmApplication;
 
 public class TennisController {
-    private Window stage;
+    private IhmApplication application;
 
-    public void setStage(Window stage)
-    {
-        this.stage=stage;
+    public IhmApplication getApplication() {
+        return application;
     }
-    public Window getStage()
-    {
-        return this.stage;
+
+    public void setApplication(IhmApplication application) {
+        this.application = application;
     }
 }
