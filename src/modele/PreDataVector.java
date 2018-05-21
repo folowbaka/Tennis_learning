@@ -5,9 +5,11 @@ public class PreDataVector {
     private double x;
     private double y;
     private double z;
+    private int capteur;
 
-    public  PreDataVector(double x,double y,double z)
+    public  PreDataVector(int capteur,double x,double y,double z)
     {
+        this.capteur=capteur;
         this.x=x;
         this.y=y;
         this.z=z;
@@ -38,5 +40,9 @@ public class PreDataVector {
 
     public void setZ(double z) {
         this.z = z;
+    }
+
+    public int getCapteur() {
+        return capteur;
     }
 }

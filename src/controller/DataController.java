@@ -59,6 +59,7 @@ public class DataController extends TennisController{
                 if(!movType.equals("NULL"))
                 {
                     PreData.readCsv(listOfCSV[i].getAbsolutePath());
+                    System.out.println(listOfCSV[i].getName());
                     PreData.detectMov(movType);
                 }
             }

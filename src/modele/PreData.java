@@ -26,7 +26,7 @@ public class PreData {
             {
                 String row=scanner.next();
                 String[] rowData=row.split(";");
-                csvData.add(new PreDataVector(Double.parseDouble(rowData[2]),Double.parseDouble(rowData[3]),Double.parseDouble(rowData[4])));
+                csvData.add(new PreDataVector(Integer.parseInt(rowData[0]),Double.parseDouble(rowData[2]),Double.parseDouble(rowData[3]),Double.parseDouble(rowData[4])));
 
             }
         }
@@ -38,7 +38,6 @@ public class PreData {
     public  static void detectMov(String movType)
     {
         int nbVector=csvData.size();
-
         double[] vectorNorms=new double[nbVector];
         for(int i=0;i<nbVector;i++)
         {
@@ -52,10 +51,57 @@ public class PreData {
             {
                 int peak=foundPeakMov(numVector,nbVector,vectorNorms);
                 System.out.println("PEAK "+peak);
-                int beginInterval=0;
-                int endInterval=0;
+                int beginInterval=peak;
+                int endInterval=peak;
+                boolean endMov1=false;
+                boolean endMov2=false;
+                while (beginInterval>0 && (!endMov1 || !endMov2))
+                {
+                    if(vectorNorms[beginInterval]<4)
+                    {
+                        if(csvData.get(beginInterval).getCapteur()==4 && csvData.get(beginInterval+1).getCapteur()!=4)
+                        {
+                            if (endMov1)
+                                endMov2 = true;
+                            else {
+                                endMov1 = true;
+                                beginInterval--;
+                            }
+                        }
+                        else
+                        {
+                            beginInterval--;
+                        }
+                    }
+                    else
+                        beginInterval--;
+                }
+                if(beginInterval<0)
+                    beginInterval=0;
+                endMov1=false;
+                endMov2=false;
+                while (endInterval<nbVector && (!endMov1 || !endMov2))
+                {
+                    if(vectorNorms[endInterval]<4)
+                    {
+                        if(csvData.get(endInterval).getCapteur()==4 && csvData.get(endInterval+1).getCapteur()!=4)
+                        {
+                            if (endMov1)
+                                endMov2 = true;
+                            else {
+                                endMov1 = true;
+                                endInterval++;
+                            }
 
-                if(peak+50>nbVector)
+                        }
+                        else
+                            endInterval++;
+                    }
+                    else
+                        endInterval++;
+                }
+                numVector=endInterval;
+                /*if(peak+50>nbVector)
                 {
                     numVector = nbVector;
                 }
@@ -66,7 +112,7 @@ public class PreData {
                 }
                 endInterval=numVector;
                 if(peak-50>0)
-                    beginInterval=peak-50;
+                    beginInterval=peak-50;*/
                 csvMov.add(new Movement(csvData,beginInterval,endInterval,movType));
 
             }
