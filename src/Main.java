@@ -18,7 +18,7 @@ public class Main extends Application {
         IhmApplication application=new IhmApplication(primaryStage);
         primaryStage.setTitle("Hello World");
         application.getRoot().setScaleShape(true);
-        primaryStage.setScene(new Scene(application.getRoot(), 1500, 1000));
+        primaryStage.setScene(new Scene(application.getRoot(), 1500, 900));
         primaryStage.setResizable(true);
         primaryStage.show();
     }

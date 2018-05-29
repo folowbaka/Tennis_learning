@@ -7,12 +7,15 @@ import weka.core.Instances;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class PreData {
 
     private  static ArrayList<PreDataVector> csvData;
     private  static ArrayList<Movement> csvMov=new ArrayList<>();
+    public   static HashMap<String,ArrayList<Double>> acelleroData;
+    public   static HashMap<String,ArrayList<Double>> gyroData;
     public  static final int  ARFFKNN =1;
     public  static final int  TREE =2;
     public static void readCsv(String csvName)
@@ -42,6 +45,10 @@ public class PreData {
         for(int i=0;i<nbVector;i++)
         {
             vectorNorms[i]=csvData.get(i).norm();
+            if(csvData.get(i).getCapteur()==1)
+                acelleroData.get(movType).add(vectorNorms[i]);
+            else if(csvData.get(i).getCapteur()==4)
+                gyroData.get(movType).add(vectorNorms[i]);
         }
         int numVector=0;
 
@@ -61,6 +68,7 @@ public class PreData {
                     {
                         if(csvData.get(beginInterval).getCapteur()==4 && csvData.get(beginInterval+1).getCapteur()!=4)
                         {
+
                             if (endMov1)
                                 endMov2 = true;
                             else {
@@ -80,12 +88,13 @@ public class PreData {
                     beginInterval=0;
                 endMov1=false;
                 endMov2=false;
-                while (endInterval<nbVector && (!endMov1 || !endMov2))
+                while (endInterval<nbVector && (!endMov1 ||!endMov2))
                 {
                     if(vectorNorms[endInterval]<4)
                     {
                         if(csvData.get(endInterval).getCapteur()==4 && csvData.get(endInterval+1).getCapteur()!=4)
                         {
+
                             if (endMov1)
                                 endMov2 = true;
                             else {
@@ -256,6 +265,17 @@ public class PreData {
         }
         pw.print(data);
         pw.close();
+    }
+    public static void initSimpleChartData()
+    {
+        acelleroData=new HashMap<>();
+        gyroData=new HashMap<>();
+
+        for (MovType movType : MovType.values())
+        {
+            acelleroData.put(movType.getMovType(),new ArrayList<Double>());
+            gyroData.put(movType.getMovType(),new ArrayList<Double>());
+        }
     }
 
     public static ArrayList<Movement> getCsvMov() {

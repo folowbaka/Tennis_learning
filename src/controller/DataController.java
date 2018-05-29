@@ -19,12 +19,12 @@ public class DataController extends TennisController{
     @FXML
     private void chooseCsvDataSensor()
     {
-
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Répertoire CSV");
         File selectedFile=chooser.showDialog(this.getApplication().getPrimaryStage());
         if(selectedFile!=null)
         {
+            PreData.initSimpleChartData();
             preDataFileTextF.setText(selectedFile.getAbsolutePath());
             File[] listOfCSV=selectedFile.listFiles();
             for(int i=0;i<listOfCSV.length;i++)
