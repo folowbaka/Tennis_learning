@@ -6,10 +6,12 @@ public class PreDataVector {
     private double y;
     private double z;
     private int capteur;
+    private int time;
 
-    public  PreDataVector(int capteur,double x,double y,double z)
+    public  PreDataVector(int capteur,int time,double x,double y,double z)
     {
         this.capteur=capteur;
+        this.time=time;
         this.x=x;
         this.y=y;
         this.z=z;

@@ -60,7 +60,7 @@ public class DataController extends TennisController{
                 {
                     PreData.readCsv(listOfCSV[i].getAbsolutePath());
                     System.out.println(listOfCSV[i].getName());
-                    PreData.detectMov(movType);
+                    PreData.detectMov(movType,50,4);
                 }
             }
             PreData.writeArff(selectedFile,PreData.ARFFKNN);

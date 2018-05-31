@@ -29,7 +29,7 @@ public class PreData {
             {
                 String row=scanner.next();
                 String[] rowData=row.split(";");
-                csvData.add(new PreDataVector(Integer.parseInt(rowData[0]),Double.parseDouble(rowData[2]),Double.parseDouble(rowData[3]),Double.parseDouble(rowData[4])));
+                csvData.add(new PreDataVector(Integer.parseInt(rowData[0]),(int)Double.parseDouble(rowData[1]),Double.parseDouble(rowData[2]),Double.parseDouble(rowData[3]),Double.parseDouble(rowData[4])));
 
             }
         }
@@ -38,7 +38,7 @@ public class PreData {
             e.printStackTrace();
         }
     }
-    public  static void detectMov(String movType)
+    public  static void detectMov(String movType,int detectNorm,int normEndMov)
     {
         int nbVector=csvData.size();
         double[] vectorNorms=new double[nbVector];
@@ -54,7 +54,7 @@ public class PreData {
 
         while(numVector<nbVector)
         {
-            if (vectorNorms[numVector] > 35)
+            if (vectorNorms[numVector] > detectNorm)
             {
                 int peak=foundPeakMov(numVector,nbVector,vectorNorms);
                 System.out.println("PEAK "+peak);
@@ -64,7 +64,7 @@ public class PreData {
                 boolean endMov2=false;
                 while (beginInterval>0 && (!endMov1 || !endMov2))
                 {
-                    if(vectorNorms[beginInterval]<4)
+                    if(vectorNorms[beginInterval]<normEndMov)
                     {
                         if(csvData.get(beginInterval).getCapteur()==4 && csvData.get(beginInterval+1).getCapteur()!=4)
                         {
@@ -90,7 +90,7 @@ public class PreData {
                 endMov2=false;
                 while (endInterval<nbVector && (!endMov1 ||!endMov2))
                 {
-                    if(vectorNorms[endInterval]<4)
+                    if(vectorNorms[endInterval]<normEndMov)
                     {
                         if(csvData.get(endInterval).getCapteur()==4 && csvData.get(endInterval+1).getCapteur()!=4)
                         {
