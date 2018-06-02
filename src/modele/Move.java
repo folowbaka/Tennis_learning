@@ -7,14 +7,19 @@ public class Move {
     private ArrayList<PreDataVector> vectorMov;
     private MoveType moveType;
 
-    public Move(ArrayList<PreDataVector> vectorMov, int begin, int end, String movType)
+    public Move(ArrayList<PreDataVector> vectorMov,String moveType)
+    {
+        this.vectorMov=vectorMov;
+        this.moveType =MoveType.getMovType(moveType);
+    }
+    public Move(ArrayList<PreDataVector> vectorMov, int begin, int end, String moveType)
     {
         this.vectorMov=new ArrayList<>();
         for(int i=begin;i<end;i++)
         {
             this.vectorMov.add(vectorMov.get(i));
         }
-        this.moveType =MoveType.getMovType(movType);
+        this.moveType =MoveType.getMovType(moveType);
     }
 
     public double[] getMoySection(int nbSection)
