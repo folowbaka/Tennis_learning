@@ -2,20 +2,20 @@ package modele;
 
 import weka.core.Attribute;
 import weka.core.DenseInstance;
-import weka.core.Instance;
 import weka.core.Instances;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Scanner;
 
 public class PreData {
 
     private  static ArrayList<PreDataVector> csvData;
-    private  static ArrayList<Movement> csvMov=new ArrayList<>();
-    public   static HashMap<String,ArrayList<Double>> acelleroData;
-    public   static HashMap<String,ArrayList<Double>> gyroData;
+    private  static ArrayList<PreDataVector> csvDataAccel;
+    private  static ArrayList<PreDataVector> csvDataGyro;
+    private  static ArrayList<Move> csvMov=new ArrayList<>();
+    private  static ArrayList<Move> csvMovAccel=new ArrayList<>();
+    private  static ArrayList<Move> csvMovGyro=new ArrayList<>();
     public  static final int  ARFFKNN =1;
     public  static final int  TREE =2;
     public static void readCsv(String csvName)
@@ -23,13 +23,23 @@ public class PreData {
         try (Scanner scanner = new Scanner(new File(csvName)))
         {
             csvData=new ArrayList<>();
-
+            csvDataAccel=new ArrayList<>();
+            csvDataGyro=new ArrayList<>();
             scanner.next();
             while(scanner.hasNext())
             {
                 String row=scanner.next();
                 String[] rowData=row.split(";");
-                csvData.add(new PreDataVector(Integer.parseInt(rowData[0]),(int)Double.parseDouble(rowData[1]),Double.parseDouble(rowData[2]),Double.parseDouble(rowData[3]),Double.parseDouble(rowData[4])));
+                int capteur=Integer.parseInt(rowData[0]);
+                csvData.add(new PreDataVector(capteur,(int)Double.parseDouble(rowData[1]),Double.parseDouble(rowData[2]),Double.parseDouble(rowData[3]),Double.parseDouble(rowData[4])));
+                if(capteur==1)
+                {
+                    csvDataAccel.add(new PreDataVector(capteur,(int)Double.parseDouble(rowData[1]),Double.parseDouble(rowData[2]),Double.parseDouble(rowData[3]),Double.parseDouble(rowData[4])));
+                }
+                else
+                {
+                    csvDataGyro.add(new PreDataVector(capteur,(int)Double.parseDouble(rowData[1]),Double.parseDouble(rowData[2]),Double.parseDouble(rowData[3]),Double.parseDouble(rowData[4])));
+                }
 
             }
         }
@@ -38,17 +48,13 @@ public class PreData {
             e.printStackTrace();
         }
     }
-    public  static void detectMov(String movType,int detectNorm,int normEndMov)
+    public  static void detectMov(String movType, int detectNorm, int normEndMov, ArrayList<PreDataVector> vectors, ArrayList<Move> movs, boolean hasBothCaptor)
     {
-        int nbVector=csvData.size();
+        int nbVector=vectors.size();
         double[] vectorNorms=new double[nbVector];
         for(int i=0;i<nbVector;i++)
         {
-            vectorNorms[i]=csvData.get(i).norm();
-            if(csvData.get(i).getCapteur()==1)
-                acelleroData.get(movType).add(vectorNorms[i]);
-            else if(csvData.get(i).getCapteur()==4)
-                gyroData.get(movType).add(vectorNorms[i]);
+            vectorNorms[i]=vectors.get(i).norm();
         }
         int numVector=0;
 
@@ -56,7 +62,7 @@ public class PreData {
         {
             if (vectorNorms[numVector] > detectNorm)
             {
-                int peak=foundPeakMov(numVector,nbVector,vectorNorms);
+                int peak=foundPeakMov(numVector,nbVector,vectorNorms,hasBothCaptor);
                 System.out.println("PEAK "+peak);
                 int beginInterval=peak;
                 int endInterval=peak;
@@ -66,7 +72,7 @@ public class PreData {
                 {
                     if(vectorNorms[beginInterval]<normEndMov)
                     {
-                        if(csvData.get(beginInterval).getCapteur()==4 && csvData.get(beginInterval+1).getCapteur()!=4)
+                        if(hasBothCaptor && vectors.get(beginInterval).getCapteur()==4 && vectors.get(beginInterval+1).getCapteur()!=4)
                         {
 
                             if (endMov1)
@@ -74,6 +80,15 @@ public class PreData {
                             else {
                                 endMov1 = true;
                                 beginInterval--;
+                            }
+                        }
+                        else if(!hasBothCaptor)
+                        {
+                            if (endMov1)
+                                endMov2 = true;
+                            else {
+                                endMov1 = true;
+                                endInterval--;
                             }
                         }
                         else
@@ -92,7 +107,18 @@ public class PreData {
                 {
                     if(vectorNorms[endInterval]<normEndMov)
                     {
-                        if(csvData.get(endInterval).getCapteur()==4 && csvData.get(endInterval+1).getCapteur()!=4)
+                        if(hasBothCaptor && vectors.get(endInterval).getCapteur()==4 && (endInterval+1)!=nbVector && vectors.get(endInterval+1).getCapteur()!=4)
+                        {
+
+                            if (endMov1)
+                                endMov2 = true;
+                            else {
+                                endMov1 = true;
+                                endInterval++;
+                            }
+
+                        }
+                        else if(!hasBothCaptor)
                         {
 
                             if (endMov1)
@@ -122,7 +148,7 @@ public class PreData {
                 endInterval=numVector;
                 if(peak-50>0)
                     beginInterval=peak-50;*/
-                csvMov.add(new Movement(csvData,beginInterval,endInterval,movType));
+                movs.add(new Move(vectors,beginInterval,endInterval,movType));
 
             }
             else
@@ -133,11 +159,13 @@ public class PreData {
 
     }
 
-    public static int foundPeakMov(int numVector,int nbVector,double[] vectorNorms)
+    public static int foundPeakMov(int numVector,int nbVector,double[] vectorNorms,boolean hasBothCaptor)
     {
         int peak=0;
         double maxNorm=0;
         int intervalle=50;
+        if(!hasBothCaptor)
+            intervalle/=2;
         if(numVector+intervalle>nbVector)
         {
             intervalle=nbVector-numVector;
@@ -153,7 +181,7 @@ public class PreData {
         return peak;
     }
 
-    public static void writeArff(File directory,int classifier)
+    public static void writeArff(File directory,int classifier,ArrayList<Move> movs)
     {
 
         File file = new File(directory.getAbsolutePath()+"/"+directory.getName()+classifier+".arff");
@@ -194,8 +222,8 @@ public class PreData {
             attsRel.add(new Attribute("z"));
             dataRel = new Instances("vectorXYZ", attsRel, 0);
             atts.add(new Attribute("bag", dataRel, 0));
-            for (MovType movType : MovType.values()) {
-                attVals.add(movType.getMovType());
+            for (MoveType moveType : MoveType.values()) {
+                attVals.add(moveType.getMovType());
             }
             attVals.remove(attVals.size()-1);
             atts.add(new Attribute("class", attVals));
@@ -216,7 +244,7 @@ public class PreData {
                 }
                 vals[0] = attValso.indexOf(("" + i));
                 vals[1] = data.attribute(1).addRelation(dataRel);
-                vals[2] = attVals.indexOf(csvMov.get(i).getMovType().getMovType());
+                vals[2] = attVals.indexOf(csvMov.get(i).getMoveType().getMovType());
                 // add
                 data.add(new DenseInstance(1.0, vals));
 
@@ -239,8 +267,8 @@ public class PreData {
                     atts.add(new Attribute("coeffy"+(i+1),attValso));
                     atts.add(new Attribute("coeffz"+(i+1),attValso));
                 }
-                for (MovType movType : MovType.values()) {
-                    attVals.add(movType.getMovType());
+                for (MoveType moveType : MoveType.values()) {
+                    attVals.add(moveType.getMovType());
                 }
                 attVals.remove(attVals.size()-1);
                 atts.add(new Attribute("class", attVals));
@@ -257,7 +285,7 @@ public class PreData {
                         vals[j]=attValso.indexOf(coeffs[k]);
                         k++;
                     }
-                    vals[vals.length-1]=attVals.indexOf(csvMov.get(i).getMovType().getMovType());
+                    vals[vals.length-1]=attVals.indexOf(csvMov.get(i).getMoveType().getMovType());
                     data.add(new DenseInstance(1.0, vals));
                 }
                 break;
@@ -266,19 +294,52 @@ public class PreData {
         pw.print(data);
         pw.close();
     }
-    public static void initSimpleChartData()
-    {
-        acelleroData=new HashMap<>();
-        gyroData=new HashMap<>();
 
-        for (MovType movType : MovType.values())
-        {
-            acelleroData.put(movType.getMovType(),new ArrayList<Double>());
-            gyroData.put(movType.getMovType(),new ArrayList<Double>());
-        }
+    public static ArrayList<Move> getCsvMov() {
+        return csvMov;
     }
 
-    public static ArrayList<Movement> getCsvMov() {
-        return csvMov;
+    public static ArrayList<PreDataVector> getCsvData() {
+        return csvData;
+    }
+
+    public static void setCsvData(ArrayList<PreDataVector> csvData) {
+        PreData.csvData = csvData;
+    }
+
+    public static ArrayList<PreDataVector> getCsvDataAccel() {
+        return csvDataAccel;
+    }
+
+    public static void setCsvDataAccel(ArrayList<PreDataVector> csvDataAccel) {
+        PreData.csvDataAccel = csvDataAccel;
+    }
+
+    public static ArrayList<PreDataVector> getCsvDataGyro() {
+        return csvDataGyro;
+    }
+
+    public static void setCsvDataGyro(ArrayList<PreDataVector> csvDataGyro) {
+        PreData.csvDataGyro = csvDataGyro;
+    }
+
+    public static void setCsvMov(ArrayList<Move> csvMov) {
+        PreData.csvMov = csvMov;
+    }
+
+    public static ArrayList<Move> getCsvMovAccel() {
+        return csvMovAccel;
+    }
+
+    public static void setCsvMovAccel(ArrayList<Move> csvMovAccel) {
+        PreData.csvMovAccel = csvMovAccel;
+    }
+
+    public static ArrayList<Move> getCsvMovGyro() {
+        return csvMovGyro;
+    }
+
+    public static void setCsvMovGyro(ArrayList<Move> csvMovGyro) {
+        PreData.csvMovGyro = csvMovGyro;
     }
 }

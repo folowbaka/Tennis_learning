@@ -2,19 +2,19 @@ package modele;
 
 import java.util.ArrayList;
 
-public class Movement {
+public class Move {
 
     private ArrayList<PreDataVector> vectorMov;
-    private MovType movType;
+    private MoveType moveType;
 
-    public Movement(ArrayList<PreDataVector> vectorMov,int begin,int end,String movType)
+    public Move(ArrayList<PreDataVector> vectorMov, int begin, int end, String movType)
     {
         this.vectorMov=new ArrayList<>();
         for(int i=begin;i<end;i++)
         {
             this.vectorMov.add(vectorMov.get(i));
         }
-        this.movType=MovType.getMovType(movType);
+        this.moveType =MoveType.getMovType(movType);
     }
 
     public double[] getMoySection(int nbSection)
@@ -71,7 +71,7 @@ public class Movement {
         this.vectorMov = vectorMov;
     }
 
-    public MovType getMovType() {
-        return movType;
+    public MoveType getMoveType() {
+        return moveType;
     }
 }

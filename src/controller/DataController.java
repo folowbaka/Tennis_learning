@@ -24,7 +24,6 @@ public class DataController extends TennisController{
         File selectedFile=chooser.showDialog(this.getApplication().getPrimaryStage());
         if(selectedFile!=null)
         {
-            PreData.initSimpleChartData();
             preDataFileTextF.setText(selectedFile.getAbsolutePath());
             File[] listOfCSV=selectedFile.listFiles();
             for(int i=0;i<listOfCSV.length;i++)
@@ -60,11 +59,13 @@ public class DataController extends TennisController{
                 {
                     PreData.readCsv(listOfCSV[i].getAbsolutePath());
                     System.out.println(listOfCSV[i].getName());
-                    PreData.detectMov(movType,50,4);
+                    PreData.detectMov(movType,40,3,PreData.getCsvData(),PreData.getCsvMov(),true);
+                    PreData.detectMov(movType,40,9,PreData.getCsvDataAccel(),PreData.getCsvMovAccel(),false);
+                    PreData.detectMov(movType,7,1,PreData.getCsvDataGyro(),PreData.getCsvMovGyro(),false);
                 }
             }
-            PreData.writeArff(selectedFile,PreData.ARFFKNN);
-            PreData.writeArff(selectedFile,PreData.TREE);
+            PreData.writeArff(selectedFile,PreData.ARFFKNN,PreData.getCsvMov());
+            PreData.writeArff(selectedFile,PreData.TREE,PreData.getCsvMov());
             this.getApplication().getChartController().drawChartMov();
         }
     }

@@ -1,6 +1,6 @@
 package modele;
 
-public enum MovType {
+public enum MoveType {
     CDC("CDC"),
     CDL("CDL"),
     CDP("CDP"),
@@ -17,7 +17,7 @@ public enum MovType {
 
     private String movType;
 
-    MovType(String movType)
+    MoveType(String movType)
     {
         this.movType=movType;
     }
@@ -26,7 +26,7 @@ public enum MovType {
         return movType;
     }
 
-    public static  MovType getMovType(String movType)
+    public static MoveType getMovType(String movType)
     {
         switch (movType)
         {

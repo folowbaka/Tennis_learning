@@ -6,11 +6,9 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
-import modele.MovType;
-import modele.Movement;
+import modele.MoveType;
+import modele.Move;
 import modele.PreData;
-
-import java.util.HashMap;
 
 public class ChartController extends  TennisController {
 
@@ -35,16 +33,18 @@ public class ChartController extends  TennisController {
         //defining a series
         //populating the series with data
         int nbMov=PreData.getCsvMov().size();
-        for (MovType movType : MovType.values())
+        int nbMovAccel=PreData.getCsvMovAccel().size();
+        int nbMovGyro=PreData.getCsvMovGyro().size();
+        for (MoveType moveType : MoveType.values())
         {
-            if(!movType.getMovType().equals("NULL"))
+            if(!moveType.getMovType().equals("NULL"))
             {
                 XYChart.Series series = new XYChart.Series();
                 int pointGraph = 0;
                 for (int i = 0; i < nbMov; i++)
                 {
-                    Movement mouvement = PreData.getCsvMov().get(i);
-                    if (mouvement.getMovType().getMovType().equals(movType.getMovType())) {
+                    Move mouvement = PreData.getCsvMov().get(i);
+                    if (mouvement.getMoveType().getMovType().equals(moveType.getMovType())) {
                         int nbVector = mouvement.getVectorMov().size();
                         for (int j = 0; j < nbVector; j++) {
                             series.getData().add(new XYChart.Data(pointGraph + 1, mouvement.getVectorMov().get(j).norm()));
@@ -57,35 +57,50 @@ public class ChartController extends  TennisController {
                 NumberAxis yAxis = new NumberAxis();
                 NumberAxis xAxis = new NumberAxis();
                 lineChart = new LineChart<Number, Number>(xAxis, yAxis);
-                lineChart.setTitle(movType.getMovType());
+                lineChart.setTitle(moveType.getMovType());
                 lineChart.getData().add(series);
                 chartPanel.getChildren().add(lineChart);
 
                 series = new XYChart.Series();
-                int nbPointAcel=PreData.acelleroData.get(movType.getMovType()).size();
-                for (int i = 0; i < nbPointAcel; i++)
+                pointGraph=0;
+                for (int i = 0; i < nbMovAccel; i++)
                 {
+                    Move mouvement = PreData.getCsvMovAccel().get(i);
+                    if (mouvement.getMoveType().getMovType().equals(moveType.getMovType())) {
+                        int nbVector = mouvement.getVectorMov().size();
+                        for (int j = 0; j < nbVector; j++) {
+                            series.getData().add(new XYChart.Data(pointGraph + 1, mouvement.getVectorMov().get(j).norm()));
+                            pointGraph++;
+                        }
+                        pointGraph += 10;
+                    }
 
-                            series.getData().add(new XYChart.Data(i+1,PreData.acelleroData.get(movType.getMovType()).get(i)));
                 }
-                xAxis = new NumberAxis(1,series.getData().size(),3);
-                xAxis.setAutoRanging(false);
+                xAxis = new NumberAxis(0,350,2);
                 lineChart = new LineChart<Number, Number>(xAxis, yAxis);
-                lineChart.setTitle(movType.getMovType());
+                lineChart.setTitle(moveType.getMovType());
                 lineChart.getData().add(series);
                 chartPanelAccel.getChildren().add(lineChart);
 
                 series = new XYChart.Series();
-                int nbPointGyro=PreData.gyroData.get(movType.getMovType()).size();
-                for (int i = 0; i < nbPointGyro; i++)
+                pointGraph=0;
+                for (int i = 0; i < nbMovGyro; i++)
                 {
+                    Move mouvement = PreData.getCsvMovGyro().get(i);
+                    if (mouvement.getMoveType().getMovType().equals(moveType.getMovType())) {
+                        int nbVector = mouvement.getVectorMov().size();
+                        for (int j = 0; j < nbVector; j++) {
+                            series.getData().add(new XYChart.Data(pointGraph + 1, mouvement.getVectorMov().get(j).norm()));
+                            pointGraph++;
+                        }
+                        pointGraph += 10;
+                    }
 
-                    series.getData().add(new XYChart.Data(i+1,PreData.gyroData.get(movType.getMovType()).get(i)));
                 }
-                xAxis = new NumberAxis(1,series.getData().size(),3);
-                yAxis=new NumberAxis(1,10,1);
+                xAxis = new NumberAxis(0,450,2);
+                yAxis = new NumberAxis(0,20,1);
                 lineChart = new LineChart<Number, Number>(xAxis, yAxis);
-                lineChart.setTitle(movType.getMovType());
+                lineChart.setTitle(moveType.getMovType());
                 lineChart.getData().add(series);
                 chartPanelGyro.getChildren().add(lineChart);
             }
