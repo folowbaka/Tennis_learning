@@ -66,7 +66,7 @@ public class DataController extends TennisController{
                     PreData.detectMov(movType,40,3,PreData.getCsvData(),PreData.getCsvMov(),true);
                     PreData.detectMov(movType,40,9,PreData.getCsvDataAccel(),PreData.getCsvMovAccel(),false);
                     int nbMovGyroBefore=nbMovGyro;
-                    PreData.detectMov(movType,7 ,1,PreData.getCsvDataGyro(),PreData.getCsvMovGyro(),false);
+                    PreData.detectMov(movType,8,1,PreData.getCsvDataGyro(),PreData.getCsvMovGyro(),false);
                     nbMovGyro=PreData.getCsvMovGyro().size();
                     for(int j=nbMovGyroBefore;j<nbMovGyro;j++)
                     {
