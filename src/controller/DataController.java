@@ -19,6 +19,9 @@ public class DataController extends TennisController{
 
     @FXML
     private TextField preDataFileTextF;
+    /**
+     * Méthode lisant et traitant les données.
+     */
     @FXML
     private void chooseCsvDataSensor()
     {
@@ -32,6 +35,9 @@ public class DataController extends TennisController{
             int nbMovGyro=0;
             for(int i=0;i<listOfCSV.length;i++)
             {
+                /**
+                 * Pour chaque fichier CSV on vérifie que c'est un fichier contenant des mouvements et le type des mouvements
+                 */
                 String movType;
                 if(Pattern.matches("^CoupDroit_Coupe*.*",listOfCSV[i].getName()))
                     movType="CDC";
@@ -64,7 +70,7 @@ public class DataController extends TennisController{
                     PreData.readCsv(listOfCSV[i].getAbsolutePath());
                     System.out.println(listOfCSV[i].getName());
                     PreData.detectMov(movType,40,3,PreData.getCsvData(),PreData.getCsvMov(),true);
-                    PreData.detectMov(movType,40,9,PreData.getCsvDataAccel(),PreData.getCsvMovAccel(),false);
+                    PreData.detectMov(movType,40,8,PreData.getCsvDataAccel(),PreData.getCsvMovAccel(),false);
                     int nbMovGyroBefore=nbMovGyro;
                     PreData.detectMov(movType,8,1,PreData.getCsvDataGyro(),PreData.getCsvMovGyro(),false);
                     nbMovGyro=PreData.getCsvMovGyro().size();

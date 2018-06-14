@@ -1,11 +1,27 @@
 package modele;
-
+/**
+ * Classe representant une ligne de données
+ */
 public class PreDataVector {
-
+    /**
+     * Donnée sur l'axe x
+     */
     private double x;
+    /**
+     * Donnée sur l'axe y
+     */
     private double y;
+    /**
+     * Donnée sur l'axe z
+     */
     private double z;
+    /**
+     * Entier représentant le capteur utilisé : 1 pour l'accéléromètre  et 4 pour le gyroscope
+     */
     private int capteur;
+    /**
+     * Le temps du relevé par le capteur.
+     */
     private int time;
 
     public  PreDataVector(int capteur,int time,double x,double y,double z)

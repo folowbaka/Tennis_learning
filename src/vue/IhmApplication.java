@@ -3,10 +3,8 @@ package vue;
 import controller.ChartController;
 import controller.DataController;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.chart.Chart;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -19,7 +17,7 @@ public class IhmApplication {
 
     public IhmApplication(Stage primaryStage) throws Exception
     {
-        FXMLLoader loader=new FXMLLoader(getClass().getResource("sample.fxml"));
+        FXMLLoader loader=new FXMLLoader(getClass().getResource("root.fxml"));
         this.root =loader.load();
         this.dataController=loader.getController();
         loader=new FXMLLoader(getClass().getResource("chartPanel.fxml"));

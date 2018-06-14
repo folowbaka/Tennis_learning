@@ -6,6 +6,7 @@ public class Move {
 
     private ArrayList<PreDataVector> vectorMov;
     private MoveType moveType;
+    public static int bla=0;
 
     public Move(ArrayList<PreDataVector> vectorMov,String moveType)
     {

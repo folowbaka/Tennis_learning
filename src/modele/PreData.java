@@ -10,15 +10,41 @@ import java.util.Scanner;
 
 public class PreData {
 
+    /**
+     * Données du fichier CSV relevées par les deux capteurs
+     */
     private  static ArrayList<PreDataVector> csvData;
+    /**
+     * Données du fichier CSV relevées par l'accéléromètre
+     */
     private  static ArrayList<PreDataVector> csvDataAccel;
+    /**
+     * Données du fichier CSV relevées par le gyroscope
+     */
     private  static ArrayList<PreDataVector> csvDataGyro;
+    /**
+     * Liste des mouvements créée à partir des données brutes
+     */
     private  static ArrayList<Move> csvMov=new ArrayList<>();
+    /**
+     * Liste des mouvements créée à partir des données de l'accéléromètre
+     */
     private  static ArrayList<Move> csvMovAccel=new ArrayList<>();
+    /**
+     * Liste des mouvements créée à partir des données du  gyroscope
+     */
     private  static ArrayList<Move> csvMovGyro=new ArrayList<>();
+    /**
+     * Liste des mouvements créée à partir des données de l'accéléromètre à partir des données du gyroscope
+     */
     private static  ArrayList<Move> csvMovAccelGyro=new ArrayList<>();
     public  static final int  ARFFKNN =1;
     public  static final int  TREE =2;
+    /**
+     * Méthode récupérant les données d'un fichier CSV
+     * @param csvName le nom du fichier CSV
+     *
+     */
     public static void readCsv(String csvName)
     {
         try (Scanner scanner = new Scanner(new File(csvName)))
@@ -49,41 +75,54 @@ public class PreData {
             e.printStackTrace();
         }
     }
+    /**
+     * Méthode récupérant les mouvements du fichier CSV
+     * @param movType le type de mouvement
+     * @param detectNorm le seuil à utiliser pour détecter un mouvement
+     * @param normEndMov le seuil à utiliser pour détecter la fin d'un mouvement
+     * @param vectors les données à utiliser
+     * @param movs liste qui stocke les mouvements détectés
+     * @param hasBothCaptor boolean indiquant si la liste contient des données relevées par les deux capteurs
+     *
+     */
     public  static void detectMov(String movType, int detectNorm, double normEndMov, ArrayList<PreDataVector> vectors, ArrayList<Move> movs, boolean hasBothCaptor)
     {
         int nbVector=vectors.size();
         double[] vectorNorms=new double[nbVector];
+        //Nous calculons la norme pour chaque vecteur
         for(int i=0;i<nbVector;i++)
         {
             vectorNorms[i]=vectors.get(i).norm();
         }
         int numVector=0;
 
+        //Nous parcourons la liste
         while(numVector<nbVector)
         {
+            //Si la norme est supérieure a detectNorm
             if (vectorNorms[numVector] > detectNorm)
             {
+                //On trouve le maximum du mouvement
                 int peak=foundPeakMov(numVector,nbVector,vectorNorms,hasBothCaptor);
                 System.out.println("PEAK "+peak);
                 int beginInterval=peak;
                 int endInterval=peak;
                 boolean endMov1=false;
                 boolean endMov2=false;
-                while (beginInterval>0 && (!endMov1  || !endMov2))
+                //On recule a partir du maximum tant qu'il ne ya pas au moins deux vecteurs ayant une norme inférieur à normEndMov
+                while (beginInterval>0 && (!endMov1 || !endMov2))
                 {
                     if(vectorNorms[beginInterval]<normEndMov)
                     {
                         if(hasBothCaptor && vectors.get(beginInterval).getCapteur()==4 && vectors.get(beginInterval+1).getCapteur()!=4)
                         {
 
-
                             if(endMov1)
                                 endMov2=true;
                             else {
                                 endMov1 = true;
-                                beginInterval--;
+                                beginInterval++;
                             }
-
                         }
                         else if(!hasBothCaptor)
                         {
@@ -92,9 +131,8 @@ public class PreData {
                                 endMov2=true;
                             else {
                                 endMov1 = true;
-                                beginInterval--;
+                                beginInterval++;
                             }
-
                         }
                         else
                         {
@@ -108,23 +146,11 @@ public class PreData {
                     beginInterval=0;
                 endMov1=false;
                 endMov2=false;
-                while (endInterval<nbVector && (!endMov1 ||!endMov2))
+                while (endInterval<nbVector && (!endMov1 || !endMov2))
                 {
                     if(vectorNorms[endInterval]<normEndMov)
                     {
                         if(hasBothCaptor && vectors.get(endInterval).getCapteur()==4 && (endInterval+1)!=nbVector && vectors.get(endInterval+1).getCapteur()!=4)
-                        {
-
-                                if(endMov1)
-                                    endMov2=true;
-                                else {
-                                    endMov1 = true;
-                                    endInterval++;
-                                }
-
-
-                        }
-                        else if(!hasBothCaptor)
                         {
 
 
@@ -136,7 +162,17 @@ public class PreData {
                             }
 
 
+
+
                         }
+                        else if(!hasBothCaptor)
+                        {
+                            if(endMov1)
+                                endMov2=true;
+                            else {
+                                endMov1 = true;
+                                endInterval++;
+                            }                        }
                         else
                             endInterval++;
                     }
